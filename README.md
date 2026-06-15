@@ -56,7 +56,7 @@ Abrir en el navegador: http://127.0.0.1:8050
 
 ## Datos
 
-- `data_dashboard.csv`: dataset de Google Play Store ya procesado en EV1/EV2.
+- `data_dashboard.csv`: dataset de Google Play Store.
   Tiene 11.096 filas; al cargarlo se eliminan apps duplicadas y quedan 9.628 apps
   únicas, cada una con su cluster asignado (Apps Masivas, Nicho Alta Satisfacción o
   Bajo Rendimiento) y, para 1.079 apps, el porcentaje de reseñas positivas obtenido
@@ -78,7 +78,7 @@ logarítmicas + escalado con StandardScaler), por lo que el MAE/RMSE están en
 desviaciones estándar de esa escala, no en estrellas de rating. El K-Means (K=3) se
 validó con el método del codo y el coeficiente de silhouette.
 
-## Autores
+## Integrantes:
 
 - Paula Caro Romero
 - Vicente Cancino Riveros
