@@ -1,136 +1,84 @@
-# 📊 Google Play Store Analytics Dashboard
-## EV3 — SCY1101 Programación para la Ciencia de Datos
-**Paula Caro & Vicente Cancino | DuocUC 2025**
+# Dashboard Google Play Store - EV3 SCY1101
 
----
+Programación para la Ciencia de Datos - DuocUC
+Paula Caro Romero y Vicente Cancino Riveros
 
-## 📌 Descripción del Proyecto
+## Descripción
 
-Solución analítica **end-to-end** del ecosistema de la Google Play Store. A partir de 10.326 aplicaciones, se construyó un pipeline de análisis que integra **EDA, Machine Learning supervisado y no supervisado, análisis NLP de sentimiento** y un **dashboard interactivo** para apoyar la toma de decisiones en dos audiencias: gerencial y técnica.
+Este repositorio contiene el dashboard interactivo de la Evaluación Parcial 3. Es la
+continuación del trabajo hecho en EV1 (limpieza y preprocesamiento del dataset de
+Google Play Store) y EV2 (entrenamiento de un Random Forest y de un modelo K-Means
+para segmentar el mercado de apps).
 
-**Problema de negocio:** ¿Qué factores determinan el éxito de una aplicación en Google Play Store, y cómo segmentar el mercado para diseñar estrategias diferenciadas?
+El dashboard está hecho con Dash y Plotly, y tiene dos vistas pensadas para
+audiencias distintas:
 
----
+- **Vista Gerencial**: KPIs generales (apps analizadas, rating promedio, % de apps
+  gratuitas, reseñas analizadas, sentimiento positivo), distribución de apps por
+  categoría, proporción gratis/pago, segmentación de mercado (K-Means) y rating
+  promedio por categoría.
+- **Vista Técnica**: métricas de los modelos de EV2 (R², MAE, validación cruzada),
+  importancia de variables del Random Forest, comparación entre modelos, distribución
+  de ratings, correlación entre número de reseñas y rating, análisis de sentimiento
+  (NLP) por segmento, y un explorador interactivo que permite filtrar el gráfico de
+  reseñas vs rating por categoría y por tipo (gratis/pago).
 
-## 🗂️ Estructura del Proyecto
+## Estructura del proyecto
 
 ```
-google-play-analytics/
+EV3-Cancino-Caro/
+├── app.py                       # Dashboard (Dash/Plotly)
 ├── data/
-│   ├── data_dashboard.csv          # Dataset consolidado con clusters
-│   ├── feature_importances.csv     # Importancia de variables del modelo
-│   └── model_metrics.csv           # Métricas de los modelos (EV2)
-├── notebooks/
-│   └── EV2_PCDD_Caro_Cancino.ipynb # Análisis EV2: EDA + ML + Clustering
-├── dashboards/
-│   └── app.py                      # Dashboard Dash/Plotly (EV3)
-├── docs/
-│   └── README.md                   # Este archivo
-└── requirements.txt
+│   ├── data_dashboard.csv       # Apps con clusters, transformaciones y sentimiento
+│   ├── feature_importances.csv  # Importancia de variables del Random Forest (EV2)
+│   └── model_metrics.csv        # R2, MAE y RMSE de los modelos comparados en EV2
+├── requirements.txt
+└── README.md
 ```
 
----
+## Instalación y ejecución
 
-## 🚀 Instalación y Ejecución
+Crear un entorno virtual (opcional pero recomendado) e instalar las dependencias:
 
-### 1. Clonar el repositorio
-
-```bash
-git clone https://github.com/<usuario>/google-play-analytics.git
-cd google-play-analytics
 ```
-
-### 2. Crear entorno virtual e instalar dependencias
-
-```bash
 python -m venv venv
-source venv/bin/activate          # Linux/Mac
-# venv\Scripts\activate          # Windows
-
+venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Ejecutar el dashboard
+Ejecutar el dashboard:
 
-```bash
-cd dashboards
+```
 python app.py
 ```
 
-Abrir en el navegador: **http://localhost:8050**
+Abrir en el navegador: http://127.0.0.1:8050
 
----
+## Datos
 
-## 📦 Dependencias
+- `data_dashboard.csv`: dataset de Google Play Store ya procesado en EV1/EV2.
+  Tiene 11.096 filas; al cargarlo se eliminan apps duplicadas y quedan 9.628 apps
+  únicas, cada una con su cluster asignado (Apps Masivas, Nicho Alta Satisfacción o
+  Bajo Rendimiento) y, para 1.079 apps, el porcentaje de reseñas positivas obtenido
+  con análisis NLP.
+- `feature_importances.csv`: importancia relativa de las variables del Random Forest
+  entrenado en EV2 (las 15 más relevantes se muestran en la vista técnica).
+- `model_metrics.csv`: R², MAE y RMSE de los tres modelos comparados en EV2.
 
-Ver `requirements.txt`:
+## Modelos (resultados de EV2)
 
-```
-dash>=2.14.0
-plotly>=5.17.0
-pandas>=2.0.0
-numpy>=1.24.0
-scikit-learn>=1.3.0
-statsmodels>=0.14.0
-```
-
----
-
-## 📊 Datasets
-
-| Archivo | Descripción | Filas |
+| Modelo | R² | MAE |
 |---|---|---|
-| `googleplaystore_clean.csv` | Datos limpios, base de todo | 10,326 |
-| `googleplaystore_merged.csv` | Con sentimiento NLP | 1,079 |
-| `googleplaystore_ml_ready.csv` | One-Hot + StandardScaler (EV1) | 10,326 × 173 |
+| Regresión Lineal | 0.9236 | 0.1866 |
+| Random Forest | 0.9240 | 0.1671 |
+| Random Forest (CV K=5) | 0.9177 ± 0.004 | - |
 
----
+El Random Forest se entrenó sobre 173 features (One-Hot Encoding + transformaciones
+logarítmicas + escalado con StandardScaler), por lo que el MAE/RMSE están en
+desviaciones estándar de esa escala, no en estrellas de rating. El K-Means (K=3) se
+validó con el método del codo y el coeficiente de silhouette.
 
-## 🤖 Modelos ML (EV2)
+## Autores
 
-| Modelo | R² | MAE | Contexto |
-|---|---|---|---|
-| Regresión Lineal (Baseline) | 0.9236 | 0.1866 | Test 20% |
-| Random Forest Regressor | **0.9240** | **0.1671** | Test 20% |
-| Random Forest CV K=5 | 0.9177 ± 0.004 | — | Cross-validation |
-
-> Los valores MAE/RMSE están en **desviaciones estándar** (escala StandardScaler).
-
-**Top 3 features predictoras:** `Reviews_Log`, `Size_MB`, `Review_Ratio`
-
----
-
-## 🔍 Segmentación K-Means (K=3)
-
-| Cluster | Perfil | Estrategia |
-|---|---|---|
-| **Apps Masivas** | Instalaciones +2σ, reviews altas | Mantener liderazgo, monitorear sentimiento |
-| **Nicho Alta Satisfacción** | Sentimiento +2.3σ, instalaciones moderadas | Escalar con menor competencia |
-| **Bajo Rendimiento** | Por debajo del promedio | Priorizar: generar reseñas + reducir tamaño |
-
----
-
-## 📈 Dashboard
-
-El dashboard tiene **dos vistas diferenciadas por audiencia**:
-
-- **Vista Gerencial**: KPIs de negocio, distribución de mercado, segmentación visual, hallazgos clave
-- **Vista Técnica**: Feature Importance, comparativa de modelos, explorador interactivo, análisis NLP
-
----
-
-## 👥 Colaboración (Git)
-
-El repositorio usa el siguiente flujo de trabajo:
-
-- **Branches**: `main`, `feature/dashboard`, `feature/ml-model`, `feature/eda`
-- **Issues**: tareas asignadas por integrante
-- **Pull Requests**: revisión cruzada antes de merge a `main`
-
----
-
-## 📚 Referencias
-
-- Google Play Store Dataset: https://www.kaggle.com/datasets/lava18/google-play-store-apps
-- Dash Documentation: https://dash.plotly.com
-- Scikit-learn: https://scikit-learn.org
+- Paula Caro Romero
+- Vicente Cancino Riveros
